@@ -1,2 +1,26 @@
 [] Maybe look into adding the domain as a "part" of the regex,
 and perhaps play with the stats per domain
+164.132.91.1 - - [01/Sep/2019:20:43:49 +0000] "\x16\x03\x01\x02\x00\x01\x00\x01\xFC\x03\x03\x00\xD1\x09\xEC~\x8A\xE9\xBDk\xE9\xF7]\x8Blh\xDF7\x9A\x81q\xE8m\x94\x16\xB7\x1FgK\x85\xF3\xF9\xF6\x00\x00\xDA\x00\x05\x00\x04\x00\x02\x00\x01\x00\x16\x003\x009\x00:\x00\x18\x005\x00" 400 166 "-" "-" "-"
+164.132.91.1 - - [01/Sep/2019:20:43:49 +0000] "\x16\x03\x01\x02\x00\x01\x00\x01\xFC\x03\x03J.1\x14\x0B" 400 166 "-" "-" "-"
+
+[] evaluate log file line by line to find malformed entries
+SSL - Poodle?
+144.86.173.65 - - [01/Sep/2021:01:18:28 +0000] "\x16\x03\x01\x00\xE1\x01\x00\x00\xDD\x03\x03\xEDJi\xA8Z~\x19\xF3\xE2+\x9C\x04F1X\x98o\x1EP\xC6\xE9I\xEA\x97B\x14\xEE,w\xF9\x88\xAB\x00\x00h\xCC\x14\xCC\x13\xC0/\xC0+\xC00\xC0,\xC0\x11\xC0\x07\xC0'\xC0#\xC0\x13\xC0\x09\xC0(\xC0$\xC0\x14\xC0" 400 354 "-" "-" "-"
+
+These requests have no actual "request method"
+
+156.251.136.4 - - [03/Sep/2021:08:31:20 +0000] "GET //news/html/?410'union/**/select/**/1/**/from/**/(select/**/count(*),concat(floor(rand(0)*2),0x3a,(select/**/concat(user,0x3a,password)/**/from/**/pwn_base_admin/**/limit/**/0,1),0x3a)a/**/from/**/information_schema.tables/**/group/**/by/**/a)b/**/where'1'='1.html HTTP/1.1" 404 308 "http://laura.chinet.com//news/html/?410'union/**/select/**/1/**/from/**/(select/**/count(*),concat(floor(rand(0)*2),0x3a,(select/**/concat(user,0x3a,password)/**/from/**/pwn_base_admin/**/limit/**/0,1),0x3a)a/**/from/**/information_schema.tables/**/group/**/by/**/a)b/**/where'1'='1.html" "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)" "-"
+
+ \[(.*)\] \"(\w+|^) ([^\"]*)\" (\d{3}) (\d+) \"([^\"]*)\".*
+
+ re-find returns nil if there's no valid match
+
+
+;; this sort of worked, printed the text in quotes when empty
+(defn parse-line 
+  [line]
+  (if-let [match (not-empty(re-find log-line-pattern line))]
+    (apply hash-map (interleave parts match))
+    "HELP"))
+
+    ^[^@]+@[^@]+\.[^@]+$

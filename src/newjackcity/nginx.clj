@@ -1,23 +1,40 @@
 (ns newjackcity.nginx
   (:require [clojure.string :as string]))
 
-(def parts [:original :ip :timestamp :request-method :request-uri :status-code :response-size :referrer])
+(def parts1
+  "Components of log lines to return"
+  [:original :ip :remote-user :timestamp :request-method :request-uri :status-code :response-size :referrer])
 
-(def log-line-pattern #"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})? - - \[(.*)\] \"(\w+) ([^\"]*)\" (\d{3}) (\d+) \"([^\"]*)\".*")
+(def parts2 
+  "Components of log lines to return no request method"
+  [:original :ip :timestamp :request-uri :status-code :response-size :referrer])
 
-(defn parse-line [line]
-  (let [match (re-find log-line-pattern line)]
-    (apply hash-map (interleave parts match))))
+(def log-line-pattern1
+ "Nginx log format"
+   #"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})? - (-|[^@]+@[^@]+\.[^@]+) \[(.*)\] \"(\w+) ([^\"]*)\" (\d{3}) (\d+) \"([^\"]*)\".*")
 
-(defn parse-lines [lines]
-  (map parse-line lines))
+(def log-line-pattern2
+ "Nginx log format where there is no request method"
+ #"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})? - - \[(.*)\] \"(.*)\" (\d{3}) (\d+) (\"-\").*")
 
-(defn- logfile-lines [filename]
+(defn parse-line
+  [line]
+  (condp re-seq line
+    log-line-pattern1 :>> (fn [[match]]
+                            (apply hash-map (interleave parts1 match)))
+    log-line-pattern2 :>> (fn [[match]]
+                            (apply hash-map (interleave parts2 match)))))
+
+(defn- logfile-lines
+  [filename]
   (string/split-lines (slurp filename)))
 
-(defn process-logfile [filename]
+(defn process-logfile 
+  [filename]
     (map parse-line (logfile-lines filename)))
 
-(defn nginx-logs [filenames]
+(defn nginx-logs 
+  [filenames]
   (mapcat process-logfile filenames))
 
+(nginx-logs ["blog.log"])
