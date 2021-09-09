@@ -17,7 +17,7 @@ FIXME: explanation
 FIXME: listing of options this app accepts.
 
 ## Examples
-
+![time series by timestamp minute](img/view-time-series-by-timestamp-minute.png)
 ...
 
 ### Bugs
