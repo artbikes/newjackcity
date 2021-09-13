@@ -41,11 +41,11 @@
   (i/col-names (i/to-dataset (map identity (count-entries records :by by))) [grouping-name "Hits"]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "I do something ... now."
   []
-  (ngx/nginx-logs ["test.log"]))
+  (i/view (c/time-series-plot 
+     "Minute"
+     "Hits"
+     :data (count-entries-dataset (ngx/nginx-logs ["logs/my_gist.log" ]) :by timestamp-minute :grouping-name "Minute")))
+  )
 
-;; (i/view (c/time-series-plot 
-;;     "Minute"
-;;     "Hits"
-;;     :data (count-entries-dataset (ngx/nginx-logs ["access.log" ]) :by timestamp-minute :grouping-name "Minute")))
