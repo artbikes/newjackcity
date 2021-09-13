@@ -37,4 +37,3 @@
   [filenames]
   (mapcat process-logfile filenames))
 
-(nginx-logs ["blog.log"])
